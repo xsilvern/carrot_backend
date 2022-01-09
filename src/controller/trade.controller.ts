@@ -35,9 +35,37 @@ router.post("/articles", async (req, res) => {
 });
 
 router.get("/articles", async (req, res) => {
-    const articles = await Article.findAll();
+
+    const { location } = req.query;
+    if (location == null) {
+
+        return res.status(200).json(await Article.findAll());
+    }
+    const articles = await Article.findAll({
+        where: {
+            location: location,
+        }
+    });
+
     return res.status(200).json(articles);
 });
+
+router.get("/articles/:id", async (req, res) => {
+    const { id } = req.params;
+    if (!id) {
+        return res.status(400).json();
+    }
+    const articles = await Article.findOne({
+        where: {
+            id,
+        }
+    });
+    if (!articles) {
+        return res.status(404).json();
+    }
+    return res.status(200).json(articles);
+});
+
 
 //test
 export default router;
